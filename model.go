@@ -31,7 +31,7 @@ func ValidateStruct[T any](payload T) []*ErrorResponse {
 }
 
 type Note struct {
-	ID        string    `gorm:"type:char(36);primary_key" json:"id, omitempty`
+	ID        string    `gorm:"type:char(36);primary_key" json:"id,omitempty"`
 	Title     string    `gorm:"type:varchar(255);uniqueIndex:idx_notes_title,LENGTH(255);not null" json:"title,omitempty"`
 	Content   string    `gorm:"not null" json:"content,omitempty"`
 	Category  string    `gorm:"varchar(100)" json:"category,omitempty"`
