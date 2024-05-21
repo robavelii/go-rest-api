@@ -7,12 +7,15 @@ import (
 	"strings"
 	"time"
 
+	"example/rest-api/db"
+	"example/rest-api/models"
+
 	"gorm.io/gorm"
 )
 
 // ! CREATE
 func CreateNoteHandler(w http.ResponseWriter, r *http.Request) {
-	var payload CreateNoteSchema
+	var payload models.CreateNoteSchema
 
 	// Decode JSON request body
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
@@ -25,7 +28,7 @@ func CreateNoteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// validate payload struct
-	errors := ValidateStruct(&payload)
+	errors := models.ValidateStruct(&payload)
 	if errors != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Set("Content-Type", "application/json")
@@ -34,7 +37,7 @@ func CreateNoteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	now := time.Now()
-	newNote := Note{
+	newNote := models.Note{
 		Title:     payload.Title,
 		Content:   payload.Content,
 		Category:  payload.Category,
@@ -44,7 +47,7 @@ func CreateNoteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// save new note
-	result := DB.Create(&newNote)
+	result := db.DB.Create(&newNote)
 	if result.Error != nil {
 		if strings.Contains(result.Error.Error(), "UNIQUE constraint field") {
 			w.Header().Set("Content-Type", "application/json")
@@ -99,8 +102,8 @@ func FindNotes(w http.ResponseWriter, r *http.Request) {
 	}
 	offset := (intPage - 1) * intLimit
 
-	var notes []Note
-	results := DB.Limit(intLimit).Offset(offset).Find(&notes)
+	var notes []models.Note
+	results := db.DB.Limit(intLimit).Offset(offset).Find(&notes)
 	if results.Error != nil {
 		http.Error(w, results.Error.Error(), http.StatusBadGateway)
 		return
@@ -120,8 +123,8 @@ func FindNotes(w http.ResponseWriter, r *http.Request) {
 func FindNoteById(w http.ResponseWriter, r *http.Request) {
 	noteID := r.PathValue("noteId")
 
-	var note Note
-	result := DB.First(&note, "id = ?", noteID)
+	var note models.Note
+	result := db.DB.First(&note, "id = ?", noteID)
 	if err := result.Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			w.Header().Set("Content-Type", "application/json")
@@ -158,15 +161,15 @@ func FindNoteById(w http.ResponseWriter, r *http.Request) {
 func UpdateNote(w http.ResponseWriter, r *http.Request) {
 	noteID := r.PathValue("noteId")
 
-	var payload UpdateNoteSchema
+	var payload models.UpdateNoteSchema
 	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	var note Note
-	result := DB.First(&note, "id = ?", noteID)
+	var note models.Note
+	result := db.DB.First(&note, "id = ?", noteID)
 	if err := result.Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			errorResponse := map[string]interface{}{
@@ -197,7 +200,7 @@ func UpdateNote(w http.ResponseWriter, r *http.Request) {
 	}
 	updates["updated_at"] = time.Now()
 
-	DB.Model(&note).Updates(updates)
+	db.DB.Model(&note).Updates(updates)
 
 	response := map[string]interface{}{
 		"status": "success",
@@ -214,7 +217,7 @@ func UpdateNote(w http.ResponseWriter, r *http.Request) {
 func DeleteNote(w http.ResponseWriter, r *http.Request) {
 	noteID := r.PathValue("noteId")
 
-	result := DB.Delete(&Note{}, "id = ?", noteID)
+	result := db.DB.Delete(&models.Note{}, "id = ?", noteID)
 
 	if result.RowsAffected == 0 {
 		w.Header().Set("Content-Type", "application/json")

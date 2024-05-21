@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"example/rest-api/db"
+	"example/rest-api/handlers"
 	"log"
 	"net/http"
 	"time"
@@ -11,7 +13,7 @@ import (
 
 func init() {
 	// init database
-	err := ConnectDB()
+	err := db.ConnectDB()
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
@@ -21,11 +23,11 @@ func main() {
 	router := http.NewServeMux()
 
 	router.HandleFunc("GET /api/healthchecker", HealthCheckHandler)
-	router.HandleFunc("PATCH /api/notes/{noteId}", UpdateNote)
-	router.HandleFunc("GET /api/notes/{noteId}", FindNoteById)
-	router.HandleFunc("DELETE /api/notes/{noteId}", DeleteNote)
-	router.HandleFunc("POST /api/notes/", CreateNoteHandler)
-	router.HandleFunc("GET /api/notes/", FindNotes)
+	router.HandleFunc("PATCH /api/notes/{noteId}", handlers.UpdateNote)
+	router.HandleFunc("GET /api/notes/{noteId}", handlers.FindNoteById)
+	router.HandleFunc("DELETE /api/notes/{noteId}", handlers.DeleteNote)
+	router.HandleFunc("POST /api/notes/", handlers.CreateNoteHandler)
+	router.HandleFunc("GET /api/notes/", handlers.FindNotes)
 
 	// Custom CORS configuration
 	corsConfig := cors.New(cors.Options{
@@ -46,7 +48,7 @@ func main() {
 		Handler: corsHandler,
 	}
 
-	log.Println("Starting server on port: 8080")
+	log.Println("Starting server on port: 8750")
 
 	server.ListenAndServe()
 }
