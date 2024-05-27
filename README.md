@@ -19,31 +19,34 @@ A simple RESTful API built with Go, GORM, and PostgreSQL for performing CRUD ope
 
 1. Clone the repository:
 
-```bash
-git clone https://github.com/your-username/go-rest-api.git
-```
+    ```bash
+    git clone https://github.com/your-username/go-rest-api.git
+    ```
 
-2. Copy and setup up the PostgreSQL database and update the connection details in the `.env-example` file.
+2. Copy and set up the PostgreSQL database and update the connection details in the `.env-example` file:
 
-```
-cp .env-example .env
-```
+    ```bash
+    cp .env-example .env
+    ```
 
-4. Install the dependencies:
+3. Install the dependencies:
 
-```bash
-go mod download
-```
+    ```bash
+    go mod download
+    ```
 
 4. Run the API:
 
-```bash
-go run main.go
-```
+    ```bash
+    go run main.go
+    ```
 
 The API will be available at `http://localhost:8750`.
 
 ## Endpoints
+- `POST /api/auth/register`: Register new user
+- `POST /api/auth/login`: Login user
+- `POST /api/auth/logout`: Logout user
 
 - `POST /api/notes`: Create a new note
 - `GET /api/notes`: Retrieve a list of all notes
@@ -53,5 +56,12 @@ The API will be available at `http://localhost:8750`.
 
 ## Todo
 
-[x] Add authentication feature for securing the API endpoints.
-[] Add Role-based access control
+- [x] Add authentication feature for securing the API endpoints.
+- [ ] Add Role-based access control.
+- [ ] Implement rate limiting to prevent abuse.
+- [ ] Add pagination to the `GET /api/notes` endpoint.
+- [ ] Write unit and integration tests.
+- [ ] Implement a search functionality for notes.
+- [ ] Add Swagger documentation for the API.
+- [ ] Set up a CI/CD pipeline for automated testing and deployment.
+
