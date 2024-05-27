@@ -59,7 +59,7 @@ The API will be available at `http://localhost:8750`.
 - [x] Add authentication feature for securing the API endpoints.
 - [ ] Add Role-based access control.
 - [ ] Implement rate limiting to prevent abuse.
-- [ ] Add pagination to the `GET /api/notes` endpoint.
+- [x] Add pagination to the `GET /api/notes` endpoint.
 - [ ] Write unit and integration tests.
 - [ ] Implement a search functionality for notes.
 - [ ] Add Swagger documentation for the API.
