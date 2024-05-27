@@ -2,20 +2,33 @@ package utils
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/joho/godotenv"
 )
 
-var secretKey = []byte("secretpassword")
+var JWT_SECRET string
+
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+	JWT_SECRET = os.Getenv("JWT_SECRET")
+}
 
 // Generate jwt token with user id
-func GenerateJWT(userID string) (string, error) {
+func GenerateJWT(userID, username, role string) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["user_id"] = userID
 	claims["exp"] = time.Now().Add(time.Hour * 2).Unix() //token valid for 2 hour
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	secretKey := []byte(JWT_SECRET)
+	log.Println("SecretKey: ", secretKey)
 	return token.SignedString(secretKey)
 }
 
@@ -27,7 +40,7 @@ func VerifyJWT(tokenString string) (jwt.MapClaims, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return secretKey, nil
+		return []byte(JWT_SECRET), nil
 	})
 	if err != nil {
 		return nil, err

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"example/rest-api/db"
 	"example/rest-api/handlers"
+	"example/rest-api/middleware"
 	"log"
 	"net/http"
 	"time"
@@ -17,17 +18,25 @@ func init() {
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
+
 }
 
 func main() {
 	router := http.NewServeMux()
 
+	// auth routes
+	router.Handle("POST /api/auth/register", http.HandlerFunc(handlers.RegisterHandler))
+	router.Handle("POST /api/auth/login", http.HandlerFunc(handlers.LoginHandler))
+	router.Handle("POST /api/auth/logout", middleware.AuthMiddleware(http.HandlerFunc(handlers.LogoutHandler)))
+
+	// note routes
+	router.Handle("PATCH /api/notes/{noteId}", middleware.AuthMiddleware(http.HandlerFunc(handlers.UpdateNote)))
+	router.Handle("GET /api/notes/{noteId}", middleware.AuthMiddleware(http.HandlerFunc(handlers.FindNoteById)))
+	router.Handle("DELETE /api/notes/{noteId}", middleware.AuthMiddleware(http.HandlerFunc(handlers.DeleteNote)))
+	router.Handle("POST /api/notes/", middleware.AuthMiddleware(http.HandlerFunc(handlers.CreateNoteHandler)))
+	router.Handle("GET /api/notes/", middleware.AuthMiddleware(http.HandlerFunc(handlers.FindNotes)))
+
 	router.HandleFunc("GET /api/healthchecker", HealthCheckHandler)
-	router.HandleFunc("PATCH /api/notes/{noteId}", handlers.UpdateNote)
-	router.HandleFunc("GET /api/notes/{noteId}", handlers.FindNoteById)
-	router.HandleFunc("DELETE /api/notes/{noteId}", handlers.DeleteNote)
-	router.HandleFunc("POST /api/notes/", handlers.CreateNoteHandler)
-	router.HandleFunc("GET /api/notes/", handlers.FindNotes)
 
 	// Custom CORS configuration
 	corsConfig := cors.New(cors.Options{
