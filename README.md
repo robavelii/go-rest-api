@@ -1,6 +1,6 @@
 # Go REST API
 
-A simple RESTful API built with Go, GORM, and PostgreSQL for performing CRUD operations on notes.
+A simple RESTful API built with Go, GORM, and PostgreSQL for performing CRUD operations in my journey of learning Go and getting comfortable with it.
 
 ## Tech Stack
 
@@ -24,6 +24,7 @@ git clone https://github.com/your-username/go-rest-api.git
 ```
 
 2. Copy and setup up the PostgreSQL database and update the connection details in the `.env-example` file.
+
 ```
 cp .env-example .env
 ```
@@ -52,4 +53,5 @@ The API will be available at `http://localhost:8750`.
 
 ## Todo
 
-Add authentication feature for securing the API endpoints.
+[x] Add authentication feature for securing the API endpoints.
+[] Add Role-based access control
