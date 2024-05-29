@@ -56,6 +56,15 @@ func main() {
 		Addr:    ":8750",
 		Handler: corsHandler,
 	}
+	err := server.ListenAndServe()
+	if err != nil {
+		// Check if the error is due to the port already being in use
+		if err.Error() == "listen tcp :8750: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted." {
+			log.Fatalf("Error: Port 8750 is already in use. Please choose a different port.")
+		} else {
+			log.Fatal(err)
+		}
+	}
 
 	log.Println("Starting server on port: 8750")
 
