@@ -38,6 +38,7 @@ func main() {
 	router.Handle("DELETE /api/notes/{noteId}", middleware.AuthMiddleware(http.HandlerFunc(handlers.DeleteNote)))
 	router.Handle("POST /api/notes/", middleware.AuthMiddleware(http.HandlerFunc(handlers.CreateNoteHandler)))
 	router.Handle("GET /api/notes/", middleware.AuthMiddleware(http.HandlerFunc(handlers.FindNotes)))
+	router.Handle("GET /api/notes/search", middleware.AuthMiddleware(http.HandlerFunc(handlers.SearchNote)))
 
 	router.HandleFunc("GET /api/healthchecker", HealthCheckHandler)
 

@@ -157,6 +157,20 @@ func FindNoteById(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func SearchNote(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("query")
+	var notes []models.Note
+
+	if query != "" {
+		db.DB.Where("title ILIKE ? OR content ILIKE ?", "%"+query+"%", "%"+query+"%").Find(&notes)
+	} else {
+		db.DB.Find(&notes)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(notes)
+}
+
 // ! PUT
 func UpdateNote(w http.ResponseWriter, r *http.Request) {
 	noteID := r.PathValue("noteId")
