@@ -158,15 +158,30 @@ func FindNoteById(w http.ResponseWriter, r *http.Request) {
 }
 
 func SearchNote(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query().Get("query")
-	var notes []models.Note
+	title := r.URL.Query().Get("title")
+	content := r.URL.Query().Get("content")
+	category := r.URL.Query().Get("category")
 
-	if query != "" {
-		db.DB.Where("title ILIKE ? OR content ILIKE ?", "%"+query+"%", "%"+query+"%").Find(&notes)
-	} else {
-		db.DB.Find(&notes)
+	var notes []models.Note
+	query := db.DB.Model(&models.Note{})
+	if title != "" {
+		query = query.Where("title ILIKE ?", "%"+title+"%")
 	}
 
+	if content != "" {
+		query = query.Where("content ILIKE ?", "%"+content+"%")
+	}
+
+	if category != "" {
+		query = query.Where("category ILIKE ?", "%"+category+"%")
+	}
+
+	if err := query.Find(&notes).Error; err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Return the search results
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(notes)
 }
