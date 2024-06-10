@@ -22,6 +22,9 @@ func init() {
 }
 
 func main() {
+
+	// create new rate limiter
+	rl := middleware.NewRateLimiter(1, 5) // 1 request per second and a burst size of 5
 	router := http.NewServeMux()
 
 	// auth routes
@@ -46,8 +49,11 @@ func main() {
 		AllowCredentials: true,
 	})
 
-	// Wrap the router with the logRequests middleware
-	loggedRouter := logRequests(router)
+	// Wrap the router with the rate limiting middleware
+	rateLimitedRouter := rl.RateLimiterMiddleware(router)
+
+	// Wrap the rate limited router with the logRequests middleware
+	loggedRouter := logRequests(rateLimitedRouter)
 
 	// Create a new CORS handler
 	corsHandler := corsConfig.Handler(loggedRouter)
